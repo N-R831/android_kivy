@@ -1,0 +1,407 @@
+#:import Factory kivy.factory.Factory
+<ScreenMain>:
+	do_default_tab: False
+	TabbedPanel:
+		TabbedPanelItem:
+			text:'MASTER'
+			MasterLayout:
+				
+		TabbedPanelItem:
+			text:'MONEY'
+			MoneyLayout:
+
+<MasterLayout>:
+	name: 'MasterLayout'
+	ScreenManager:
+		id: sm_Master
+		Screen_Entry:
+		Screen_Record:
+
+<Screen_Entry>:
+    name: 'Screen_Entry'
+    BoxLayout:
+        orientation:'vertical'
+        BoxLayout:
+            size_hint_y: 1
+            orientation:'vertical'
+            padding: 8
+            Label:
+                id:title
+                text: "=-=- MASTER RECORD -=-="
+                font_size:'16pt'
+            Label:
+                id:lbl_ave
+                text: root.lbl_ave
+                font_size:'12pt'
+        BoxLayout:
+            size_hint_y: 2
+            orientation:'vertical'
+            padding: 8
+            BoxLayout:
+                orientation:'horizontal'
+                padding: 8
+                Label:
+                    id:lbl_day
+                    text: "日にち"
+                    halign: 'left'
+                    size_hint_x:1
+                    text_size: self.size
+                TextInput:
+                    id:txt_day
+                    text: root.txt_day
+                    multiline:False
+                    foreground_color:0,0,0,1
+                    input_filter: 'int'
+					text_language: 'ja'
+                    size_hint_x:4
+            BoxLayout:
+                orientation:'horizontal'
+                padding: 8
+                Label:
+                    id:lbl_num
+                    text: "回数"
+                    halign: 'left'
+                    size_hint_x:1
+                    text_size: self.size
+                TextInput:
+                    id:txt_num
+                    text: root.txt_num
+                    multiline:False
+                    foreground_color:0,0,0,1
+                    input_filter: 'int'
+                    size_hint_x:4
+
+        BoxLayout:
+            size_hint_y:5
+        BoxLayout:
+            size_hint_y: 1
+            orientation:'horizontal'
+            padding: 8
+            Button:
+                text: "Entry"
+                on_press: root.EntryClicked()
+            Button:
+                text: "Record"
+                on_press: root.manager.current = 'Screen_Record'
+
+<Screen_Record>:
+	name: 'Screen_Record'
+	BoxLayout:
+		orientation:'vertical'
+		BoxLayout:
+			orientation:'horizontal'
+			canvas.before:
+				Color:
+					rgba: 255, 255, 255, 1
+				Line:
+					rectangle: self.x, self.y, self.width, self.height
+			Label:
+				text: "DAY"
+				size_hint_x: 1
+			Label:
+				text: "NUM"
+				size_hint_x: 1
+		
+		RecycleView:
+			size_hint_y: 5
+			id: rv
+			scroll_type: ['bars', 'content']
+        	viewclass: 'TableRow_Master'
+			RecycleBoxLayout:
+				default_size: None, 80
+				default_size_hint: 1, None
+                size_hint_y: None
+				height: self.minimum_height
+                orientation: 'vertical'
+				
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			padding: 8
+			Button:
+				text: "Entry"
+				on_press: root.manager.current = 'Screen_Entry'
+
+			Button:
+				text: "DataRepair"
+				on_press: root.DataRepair()
+
+<TableRow_Master@BoxLayout>:
+    orientation: 'horizontal'
+    day: ''
+    num: ''
+	canvas.before:
+        Color:
+            rgba: 255, 255, 255, 1
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+    Label:
+        text: root.day
+		size_hint_x: 1
+    Label:
+        text: root.num
+		size_hint_x: 1
+
+<MoneyLayout>:
+	name: 'MoneyLayout'
+	ScreenManager:
+		id: sm_Money
+		Screen_Entry_Money:
+		Screen_Record_Money:
+		Screen_Config_Money:
+<Screen_Entry_Money>:
+	name: 'Screen_Entry_Money'
+	BoxLayout:
+		orientation:'vertical'
+		Label:
+			id:title_money
+			text: "=~=~ MONEY MONEY MONEY ~=~="
+			font_size:'16pt'
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			padding: 8
+			Label:
+				id:lbl_day_money
+				text: "Day"
+				halign: 'center'
+				size_hint_x:1
+				text_size: self.size
+			TextInput:
+				id:txt_day_money
+				text: root.txt_day_money
+				multiline:False	#1行
+				foreground_color:0,0,0,1	#文字色
+				input_filter: 'int'
+				size_hint_x:5
+		Spinner:
+			id: spn_inout
+			size_hint_y: 1
+			size_hint_x: 0.4
+			text: '収支'
+			values: '支出', '収入'
+			on_text:root.get_kind()
+		Spinner:
+			id: spn_kind
+			size_hint_y: 1
+			size_hint_x: 0.4
+			pos_hint_x:2
+			text: 'Kind'
+			values:
+		BoxLayout:
+			orientation:'horizontal'
+			size_hint_y: 1
+			padding: 8
+			Label:
+				id:lbl_money_money
+				text: "Money"
+				halign: 'center'
+				size_hint_x:1
+				text_size: self.size
+			TextInput:
+				id:txt_money_money
+				text: ''
+				multiline:False	#1行
+				foreground_color:0,0,0,1	#文字色
+				input_filter: 'int'
+				size_hint_x:5
+
+		BoxLayout:
+			orientation:'horizontal'
+			size_hint_y: 1
+			padding: 8
+			Label:
+				id:lbl_free_money
+				text: "自由記入欄"
+				halign: 'center'
+				size_hint_x:1
+				text_size: self.size
+			TextInput:
+				id:txt_free_money
+				text: ''
+				text_language: 'ja'
+				foreground_color:0,0,0,1	#文字色
+				size_hint_x:5
+		BoxLayout:
+			size_hint_y: 3
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			padding: 8
+			Button:
+				text: "Entry"
+				on_press:root.entry_data()
+			Button:
+				text: "一覧"
+				on_press:root.manager.current = 'Screen_Record_Money'
+			Button:
+				text: "Config"
+				on_press: root.manager.current = 'Screen_Config_Money'
+
+<Screen_Record_Money>:
+	name: 'Screen_Record_Money'
+	BoxLayout:
+		orientation:'vertical'
+		BoxLayout:
+			orientation:'horizontal'
+			canvas.before:
+				Color:
+					rgba: 255, 255, 255, 1
+				Line:
+					rectangle: self.x, self.y, self.width, self.height
+			Label:
+				text: "日にち"
+				size_hint_x: 1
+			Label:
+				text: "収支"
+				size_hint_x: 1
+			Label:
+				text: "カテゴリー"
+				size_hint_x: 1
+			Label:
+				text: "金額"
+				size_hint_x: 1
+			Label:
+				text: "備考"
+				size_hint_x: 3
+		RecycleView:
+			size_hint_y: 5
+			id: rv_money
+			scroll_type: ['bars', 'content']
+        	viewclass: 'TableRow_Money'
+			RecycleBoxLayout:
+				default_size: None, 80
+				default_size_hint: 1, None
+                size_hint_y: None
+				height: self.minimum_height
+                orientation: 'vertical'	
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			padding: 8
+			Button:
+				text: "back"
+				on_press: root.manager.current = 'Screen_Entry_Money'
+
+			Button:
+				text: "Analyze"
+				on_press:
+
+<TableRow_Money@BoxLayout>:
+    orientation: 'horizontal'
+    day: ''
+    inout: ''
+    category: ''
+    price: ''
+    free: ''
+	canvas.before:
+        Color:
+            rgba: 255, 255, 255, 1
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+    Label:
+        text: root.day
+		size_hint_x: 1
+    Label:
+        text: root.inout
+		size_hint_x: 1
+    Label:
+        text: root.category
+		size_hint_x: 1
+    Label:
+        text: root.price
+		size_hint_x: 1
+    Label:
+        text: root.free
+		size_hint_x: 4
+
+<Screen_Config_Money>:
+	name: 'Screen_Config_Money'
+	BoxLayout:
+		orientation:'vertical'
+		Label:
+			id:lbl_Genre_money
+			text: "Genre"
+			halign: 'center'
+			size_hint_x:1
+		BoxLayout:
+			orientation:'horizontal'
+			Label:
+				id:lbl_money_kind_inout
+				text: "Category1"
+				halign: 'center'
+				size_hint_x:1
+				text_size: self.size
+			Spinner:
+				id: spn_inout2
+				size_hint_y: 1
+				size_hint_x:5
+				valign: 'center'
+				halign: 'center'
+				text: '収支'
+				values: '支出', '収入'
+		BoxLayout:
+			orientation:'horizontal'
+			Label:
+				id:lbl_money_kind_edtail
+				text: "Category2"
+				valign: 'center'
+				halign: 'center'
+				size_hint_x:1
+				text_size: self.size
+			TextInput:
+				id:txt_money_kind
+				text: ''
+				multiline:False	#1行
+				foreground_color:0,0,0,1	#文字色
+				size_hint_x:5
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			Button:
+				size_hint_x:0.5
+				text: "Entry"
+				on_press:root.DataEntry()
+			# Button:
+			# 	text: "Back"
+				# on_press: root.manager.current = 'Screen_Entry_Money'
+		BoxLayout:
+			size_hint_y: 1
+		Label:
+			id:lbl_SalaryDayTitle_money
+			text: "Salary Day"
+			halign: 'center'
+			size_hint_x:1
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			Label:
+				id:lbl_SalaryDay_money
+				text: "Day(input 1 to 31)"
+				halign: 'center'
+				size_hint_x:1
+				text_size: self.size
+			TextInput:
+				id:txt_SalaryDay_money
+				text: ''
+				multiline:False	#1行
+				foreground_color:0,0,0,1	#文字色
+				input_filter: 'int'
+				size_hint_x:5
+		BoxLayout:
+			size_hint_y: 1
+			orientation:'horizontal'
+			Button:
+				text: "Entry"
+				on_press:
+			Button:
+				text: "Back"
+				on_press: root.manager.current = 'Screen_Entry_Money'
+	
+		
+
+
+<MySpinnerOption@SpinnerOption>:
+    halign: 'left'
+    valign: 'middle'
+    font_size: '16pt'

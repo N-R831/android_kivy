@@ -9,6 +9,7 @@ from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.core.text import LabelBase, DEFAULT_FONT
+from kivy.uix.widget import Widget
 from kivy.resources import resource_add_path
 from kivy.utils import platform
 from kivy.core.window import Window
@@ -22,13 +23,13 @@ import sqlite3
 import os
 
 
-class ScreenMain(TabbedPanel):
+class ScreenMain(BoxLayout):
     def __init__(self, **kwargs):
         super(ScreenMain, self).__init__(**kwargs)
         
 	
 
-class Screen_Entry(Screen):
+class Screen_Entry(BoxLayout):
     # 平均回数
 	average = 0
 	txt_year = ObjectProperty(None)
@@ -82,8 +83,10 @@ class Screen_Entry(Screen):
 		cur.execute(str_sql)
 		conn.commit()
 
-class Screen_Record(Screen):
+class Screen_Record(BoxLayout):
 	rv = ObjectProperty(None)
+	def __init__(self, **kwargs):
+		super(Screen_Record, self).__init__(**kwargs)
 
 	def on_enter(self, *args):
 		print("GetData")
@@ -96,7 +99,6 @@ class Screen_Record(Screen):
 		ret = cur.fetchall()
 		return ret
 	def setDataInRowForRecicleView(self):
-		cols = ['col0', 'col1',]
 		RVTable = []
 		CSVforRecycleView = self.get_data()
 		RVTable = [{'day': item[0], 'num': str(item[1])} for item in CSVforRecycleView]
@@ -106,13 +108,23 @@ class Screen_Record(Screen):
 		# データ修正パッチ用
 		temp = 1
 
-class MasterLayout(BoxLayout):
-    pass
+class MasterLayout(TabbedPanel):
+	def __init__(self, **kwargs):
+		super(MasterLayout, self).__init__(**kwargs)
+	
+	def on_release(self):
+		sr = self.ids.Screen_Record
+		sr.on_enter()
 
 class MoneyLayout(BoxLayout):
-    pass
+	def __init__(self, **kwargs):
+		super(MoneyLayout, self).__init__(**kwargs)
+    
+	def on_release(self):
+		sr = self.ids.Screen_Record_Money
+		sr.on_enter()
 
-class Screen_Entry_Money(Screen):
+class Screen_Entry_Money(BoxLayout):
 	txt_day_money = ObjectProperty(None)
 	spn_kind = ObjectProperty(None)
 	
@@ -152,7 +164,7 @@ class Screen_Entry_Money(Screen):
 			cur.execute(str_sql)
 			conn.commit()
 
-class Screen_Record_Money(Screen):
+class Screen_Record_Money(BoxLayout):
 	rv_money = ObjectProperty(None)
     
 	def on_enter(self, *args):
@@ -171,7 +183,7 @@ class Screen_Record_Money(Screen):
 		RVTable = [{'day': item[0], 'inout': str(item[1]), 'category': str(item[2]), 'price': str(item[3]), 'free': str(item[4])} for item in CSVforRecycleView]
 		return RVTable
         
-class Screen_Config_Money(Screen):
+class Screen_Config_Money(BoxLayout):
 	spn_inout = ObjectProperty(None)
 	txt_money_kind = ObjectProperty(None)
 	txt_SalaryDay_money = ObjectProperty(None)
@@ -218,7 +230,8 @@ class MainApp(App):
 		
 	def update_font_size(self, window, width, height):
 		# ここでウィンドウサイズに基づいてフォントサイズを計算
-		self.font_size = width * 0.15  # ウィンドウ幅の5%をフォントサイズに設定
+		#self.font_size = width * 0.15  # ウィンドウ幅の5%をフォントサイズに設定
+		temp = 1
 	
 	def build(self):
 		print("goDEBUG2")

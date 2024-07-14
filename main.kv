@@ -1,7 +1,7 @@
-#:import Factory kivy.factory.Factory
 <ScreenMain>:
-	do_default_tab: False
 	TabbedPanel:
+		id:ScreenMain
+		do_default_tab: False
 		TabbedPanelItem:
 			text:'MASTER'
 			MasterLayout:
@@ -12,10 +12,15 @@
 
 <MasterLayout>:
 	name: 'MasterLayout'
-	ScreenManager:
-		id: sm_Master
+	do_default_tab: False
+	TabbedPanelItem:
+		text:'Entry'
 		Screen_Entry:
+	TabbedPanelItem:
+		text:'Record'
+		on_release: root.on_release()
 		Screen_Record:
+			id:Screen_Record
 
 <Screen_Entry>:
     name: 'Screen_Entry'
@@ -80,9 +85,6 @@
             Button:
                 text: "Entry"
                 on_press: root.EntryClicked()
-            Button:
-                text: "Record"
-                on_press: root.manager.current = 'Screen_Record'
 
 <Screen_Record>:
 	name: 'Screen_Record'
@@ -101,7 +103,6 @@
 			Label:
 				text: "NUM"
 				size_hint_x: 1
-		
 		RecycleView:
 			size_hint_y: 5
 			id: rv
@@ -113,18 +114,9 @@
                 size_hint_y: None
 				height: self.minimum_height
                 orientation: 'vertical'
-				
-		BoxLayout:
-			size_hint_y: 1
-			orientation:'horizontal'
-			padding: 8
-			Button:
-				text: "Entry"
-				on_press: root.manager.current = 'Screen_Entry'
-
-			Button:
-				text: "DataRepair"
-				on_press: root.DataRepair()
+			# Button:
+			# 	text: "DataRepair"
+			# 	on_press: root.DataRepair()
 
 <TableRow_Master@BoxLayout>:
     orientation: 'horizontal'
@@ -144,11 +136,20 @@
 
 <MoneyLayout>:
 	name: 'MoneyLayout'
-	ScreenManager:
-		id: sm_Money
-		Screen_Entry_Money:
-		Screen_Record_Money:
-		Screen_Config_Money:
+	TabbedPanel:
+		do_default_tab: False
+		TabbedPanelItem:
+			text:'Entry'
+			Screen_Entry_Money:
+		TabbedPanelItem:
+			text:'Record'
+			on_release: root.on_release()
+			Screen_Record_Money:
+				id:Screen_Record_Money
+		TabbedPanelItem:
+			text:'Config'
+			Screen_Config_Money:
+
 <Screen_Entry_Money>:
 	name: 'Screen_Entry_Money'
 	BoxLayout:
@@ -174,20 +175,24 @@
 				foreground_color:0,0,0,1	#文字色
 				input_filter: 'int'
 				size_hint_x:5
-		Spinner:
-			id: spn_inout
+		BoxLayout:
 			size_hint_y: 1
-			size_hint_x: 0.4
-			text: '収支'
-			values: '支出', '収入'
-			on_text:root.get_kind()
-		Spinner:
-			id: spn_kind
-			size_hint_y: 1
-			size_hint_x: 0.4
-			pos_hint_x:2
-			text: 'Kind'
-			values:
+			orientation:'horizontal'
+			padding: 8
+			Spinner:
+				id: spn_inout
+				size_hint_y: 1
+				size_hint_x: 0.4
+				text: '収支'
+				values: '支出', '収入'
+				on_text:root.get_kind()
+			Spinner:
+				id: spn_kind
+				size_hint_y: 1
+				size_hint_x: 0.4
+				pos_hint_x:2
+				text: 'Kind'
+				values:
 		BoxLayout:
 			orientation:'horizontal'
 			size_hint_y: 1
@@ -219,7 +224,6 @@
 			TextInput:
 				id:txt_free_money
 				text: ''
-				text_language: 'ja'
 				foreground_color:0,0,0,1	#文字色
 				size_hint_x:5
 		BoxLayout:
@@ -231,12 +235,6 @@
 			Button:
 				text: "Entry"
 				on_press:root.entry_data()
-			Button:
-				text: "一覧"
-				on_press:root.manager.current = 'Screen_Record_Money'
-			Button:
-				text: "Config"
-				on_press: root.manager.current = 'Screen_Config_Money'
 
 <Screen_Record_Money>:
 	name: 'Screen_Record_Money'
@@ -274,18 +272,7 @@
 				default_size_hint: 1, None
                 size_hint_y: None
 				height: self.minimum_height
-                orientation: 'vertical'	
-		BoxLayout:
-			size_hint_y: 1
-			orientation:'horizontal'
-			padding: 8
-			Button:
-				text: "back"
-				on_press: root.manager.current = 'Screen_Entry_Money'
-
-			Button:
-				text: "Analyze"
-				on_press:
+                orientation: 'vertical'
 
 <TableRow_Money@BoxLayout>:
     orientation: 'horizontal'
@@ -394,12 +381,6 @@
 			Button:
 				text: "Entry"
 				on_press:
-			Button:
-				text: "Back"
-				on_press: root.manager.current = 'Screen_Entry_Money'
-	
-		
-
 
 <MySpinnerOption@SpinnerOption>:
     halign: 'left'

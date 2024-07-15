@@ -225,13 +225,6 @@ class MainApp(App):
 	font_size = NumericProperty(20)
 	def __init__(self, **kwargs):
 		super(MainApp, self).__init__(**kwargs)
-		self.update_font_size(Window, Window.width, Window.height)
-		
-		
-	def update_font_size(self, window, width, height):
-		# ここでウィンドウサイズに基づいてフォントサイズを計算
-		#self.font_size = width * 0.15  # ウィンドウ幅の5%をフォントサイズに設定
-		temp = 1
 	
 	def build(self):
 		print("goDEBUG2")

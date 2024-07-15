@@ -30,14 +30,12 @@
             size_hint_y: 1
             orientation:'vertical'
             padding: 8
-            Label:
+            MyLabelBig:
                 id:title
                 text: "=-=- MASTER RECORD -=-="
-                font_size:'16pt'
-            Label:
+            MyLabelMid:
                 id:lbl_ave
                 text: root.lbl_ave
-                font_size:'12pt'
         BoxLayout:
             size_hint_y: 2
             orientation:'vertical'
@@ -45,12 +43,12 @@
             BoxLayout:
                 orientation:'horizontal'
                 padding: 8
-                Label:
+                MyLabelMid:
                     id:lbl_day
                     text: "日にち"
                     halign: 'left'
                     size_hint_x:1
-                    text_size: self.size
+                    #text_size: self.size
                 TextInput:
                     id:txt_day
                     text: root.txt_day
@@ -62,12 +60,11 @@
             BoxLayout:
                 orientation:'horizontal'
                 padding: 8
-                Label:
+                MyLabelMid:
                     id:lbl_num
                     text: "回数"
                     halign: 'left'
                     size_hint_x:1
-                    text_size: self.size
                 TextInput:
                     id:txt_num
                     text: root.txt_num
@@ -97,10 +94,10 @@
 					rgba: 255, 255, 255, 1
 				Line:
 					rectangle: self.x, self.y, self.width, self.height
-			Label:
+			MyLabelMid:
 				text: "DAY"
 				size_hint_x: 1
-			Label:
+			MyLabelMid:
 				text: "NUM"
 				size_hint_x: 1
 		RecycleView:
@@ -127,10 +124,10 @@
             rgba: 255, 255, 255, 1
         Line:
             rectangle: self.x, self.y, self.width, self.height
-    Label:
+    MyLabelMid:
         text: root.day
 		size_hint_x: 1
-    Label:
+    MyLabelMid:
         text: root.num
 		size_hint_x: 1
 
@@ -154,20 +151,18 @@
 	name: 'Screen_Entry_Money'
 	BoxLayout:
 		orientation:'vertical'
-		Label:
+		MyLabelBig:
 			id:title_money
 			text: "=~=~ MONEY MONEY MONEY ~=~="
-			font_size:'16pt'
 		BoxLayout:
 			size_hint_y: 1
 			orientation:'horizontal'
 			padding: 8
-			Label:
+			MyLabelMid:
 				id:lbl_day_money
 				text: "Day"
 				halign: 'center'
 				size_hint_x:1
-				text_size: self.size
 			TextInput:
 				id:txt_day_money
 				text: root.txt_day_money
@@ -197,12 +192,11 @@
 			orientation:'horizontal'
 			size_hint_y: 1
 			padding: 8
-			Label:
+			MyLabelMid:
 				id:lbl_money_money
 				text: "Money"
 				halign: 'center'
 				size_hint_x:1
-				text_size: self.size
 			TextInput:
 				id:txt_money_money
 				text: ''
@@ -215,12 +209,11 @@
 			orientation:'horizontal'
 			size_hint_y: 1
 			padding: 8
-			Label:
+			MyLabelMid:
 				id:lbl_free_money
 				text: "自由記入欄"
 				halign: 'center'
 				size_hint_x:1
-				text_size: self.size
 			TextInput:
 				id:txt_free_money
 				text: ''
@@ -247,21 +240,21 @@
 					rgba: 255, 255, 255, 1
 				Line:
 					rectangle: self.x, self.y, self.width, self.height
-			Label:
+			MyLabelMid:
 				text: "日にち"
-				size_hint_x: 1
-			Label:
+				size_hint_x: 2
+			MyLabelMid:
 				text: "収支"
 				size_hint_x: 1
-			Label:
+			MyLabelMid:
 				text: "カテゴリー"
-				size_hint_x: 1
-			Label:
+				size_hint_x: 2
+			MyLabelMid:
 				text: "金額"
 				size_hint_x: 1
-			Label:
+			MyLabelMid:
 				text: "備考"
-				size_hint_x: 3
+				size_hint_x: 2
 		RecycleView:
 			size_hint_y: 5
 			id: rv_money
@@ -286,39 +279,41 @@
             rgba: 255, 255, 255, 1
         Line:
             rectangle: self.x, self.y, self.width, self.height
-    Label:
+    MyLabelMin:
         text: root.day
-		size_hint_x: 1
-    Label:
+		size_hint_x: 2
+    MyLabelMin:
         text: root.inout
 		size_hint_x: 1
-    Label:
+    MyLabelMin:
         text: root.category
-		size_hint_x: 1
-    Label:
+		size_hint_x: 2
+    MyLabelMin:
         text: root.price
 		size_hint_x: 1
-    Label:
+    MyLabelMin:
         text: root.free
-		size_hint_x: 4
+		size_hint_x: 2
+		halign: 'center'
+		valign: 'middle'
+		text_size: self.size
 
 <Screen_Config_Money>:
 	name: 'Screen_Config_Money'
 	BoxLayout:
 		orientation:'vertical'
-		Label:
+		MyLabelBig:
 			id:lbl_Genre_money
 			text: "Genre"
 			halign: 'center'
 			size_hint_x:1
 		BoxLayout:
 			orientation:'horizontal'
-			Label:
+			MyLabelMid:
 				id:lbl_money_kind_inout
 				text: "Category1"
 				halign: 'center'
 				size_hint_x:1
-				text_size: self.size
 			Spinner:
 				id: spn_inout2
 				size_hint_y: 1
@@ -329,13 +324,12 @@
 				values: '支出', '収入'
 		BoxLayout:
 			orientation:'horizontal'
-			Label:
+			MyLabelMid:
 				id:lbl_money_kind_edtail
 				text: "Category2"
 				valign: 'center'
 				halign: 'center'
 				size_hint_x:1
-				text_size: self.size
 			TextInput:
 				id:txt_money_kind
 				text: ''
@@ -349,12 +343,9 @@
 				size_hint_x:0.5
 				text: "Entry"
 				on_press:root.DataEntry()
-			# Button:
-			# 	text: "Back"
-				# on_press: root.manager.current = 'Screen_Entry_Money'
 		BoxLayout:
 			size_hint_y: 1
-		Label:
+		MyLabelBig:
 			id:lbl_SalaryDayTitle_money
 			text: "Salary Day"
 			halign: 'center'
@@ -362,12 +353,11 @@
 		BoxLayout:
 			size_hint_y: 1
 			orientation:'horizontal'
-			Label:
+			MyLabelMin:
 				id:lbl_SalaryDay_money
 				text: "Day(input 1 to 31)"
 				halign: 'center'
 				size_hint_x:1
-				text_size: self.size
 			TextInput:
 				id:txt_SalaryDay_money
 				text: ''
@@ -386,3 +376,12 @@
     halign: 'left'
     valign: 'middle'
     font_size: '16pt'
+
+<MyLabelBig@Label>:
+	font_size: 48
+
+<MyLabelMid@Label>:
+	font_size: 24
+
+<MyLabelMin@Label>:
+	font_size: 16

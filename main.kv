@@ -54,7 +54,7 @@
                     text: root.txt_day
                     multiline:False
                     foreground_color:0,0,0,1
-                    input_filter: 'int'
+                    #input_filter: 'int'
 					text_language: 'ja'
                     size_hint_x:4
             BoxLayout:
@@ -168,7 +168,7 @@
 				text: root.txt_day_money
 				multiline:False	#1行
 				foreground_color:0,0,0,1	#文字色
-				input_filter: 'int'
+				#input_filter: 'int'
 				size_hint_x:5
 		BoxLayout:
 			size_hint_y: 1
@@ -235,6 +235,22 @@
 		orientation:'vertical'
 		BoxLayout:
 			orientation:'horizontal'
+			size_hint_y: 1
+			MyLabelMid:
+				size_hint_x: 1
+                id:lbl_income
+				text: root.lbl_income
+			MyLabelMid:
+				size_hint_x: 1
+                id:lbl_expense
+				text: root.lbl_expense
+			MyLabelMid:
+				size_hint_x: 1
+				id:lbl_sum
+				text: root.lbl_sum
+		BoxLayout:
+			orientation:'horizontal'
+			size_hint_y: 1
 			canvas.before:
 				Color:
 					rgba: 255, 255, 255, 1
@@ -370,7 +386,7 @@
 			orientation:'horizontal'
 			Button:
 				text: "Entry"
-				on_press:
+				on_press:root.Entry_salary_date()
 
 <MySpinnerOption@SpinnerOption>:
     halign: 'left'

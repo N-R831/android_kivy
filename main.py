@@ -17,7 +17,8 @@ from kivy.properties import NumericProperty
 import japanize_kivy
 from kivy.config import Config
 
-
+import jpholiday
+from dateutil.relativedelta import relativedelta
 import datetime
 import sqlite3
 import os
@@ -166,10 +167,30 @@ class Screen_Entry_Money(BoxLayout):
 
 class Screen_Record_Money(BoxLayout):
 	rv_money = ObjectProperty(None)
+	lbl_income = ObjectProperty(None)
+	lbl_expense = ObjectProperty(None)
+	lbl_sum = ObjectProperty(None)
+
+	def __init__(self, **kwargs):
+		super(Screen_Record_Money, self).__init__(**kwargs)
+		self.set_text()
     
+	def set_text(self):
+		income = self.get_income_data()
+		expense = self.get_expense_data()
+		if income == 'None':
+			income = 0
+		if expense == 'None':
+			expense = 0
+		sum = self.get_sum_data(int(income), int(expense))
+		self.lbl_income = "収入： " + str(income)
+		self.lbl_expense = "支出： " + str(expense)
+		self.lbl_sum = "合計： " + str(sum)
+
 	def on_enter(self, *args):
 		print("GetData")
 		self.ids.rv_money.data = self.setDataInRowForRecicleView_Money()
+
 	
 	def get_data(self):
 		str_sql = "SELECT date, inout, category, price, freeword FROM balance_hist ORDER BY date DESC"
@@ -182,7 +203,59 @@ class Screen_Record_Money(BoxLayout):
 		CSVforRecycleView = self.get_data()
 		RVTable = [{'day': item[0], 'inout': str(item[1]), 'category': str(item[2]), 'price': str(item[3]), 'free': str(item[4])} for item in CSVforRecycleView]
 		return RVTable
-        
+
+	def get_income_data(self):
+		salary_day , next_salary_day = self.get_salary_day()
+		str_sql = "SELECT SUM(price) FROM balance_hist WHERE inout = '収入' AND " \
+				  "(CAST(date AS DATE) BETWEEN CAST('" + salary_day + "' AS DATE) AND CAST('" + next_salary_day + "' AS DATE))"
+		cur = conn.cursor()
+		cur.execute(str_sql)
+		ret = cur.fetchall()
+		income = str(ret[0][0])
+		return income
+
+	def get_expense_data(self):
+		salary_day , next_salary_day = self.get_salary_day()
+		str_sql = "SELECT SUM(price) FROM balance_hist WHERE inout = '支出' AND " \
+				  "(CAST(date AS DATE) BETWEEN CAST('" + salary_day + "' AS DATE) AND CAST('" + next_salary_day + "' AS DATE))"
+		cur = conn.cursor()
+		cur.execute(str_sql)
+		ret = cur.fetchall()
+		expense = str(ret[0][0])
+		return expense
+
+	def get_sum_data(self, income, expense):
+		return str(income - expense)
+
+	def get_salary_day(self):
+		str_sql = "SELECT kind_value FROM config_list WHERE kind = 'Salary_day' limit 1"
+		cur = conn.cursor()
+		cur.execute(str_sql)
+		ret = cur.fetchall()
+		salary_day = int(ret[0][0])
+		now = datetime.datetime.now()
+		if salary_day > int(now.day):
+			date_salary_day = datetime.datetime(now.year, int(now.month) - 1, int(salary_day-1))
+		else:
+			date_salary_day = datetime.datetime(now.year, now.month, int(salary_day-1))
+		temp_str_salary_day = date_salary_day.strftime('%Y%m%d')
+		str_salary_day = self.returnBizDay(temp_str_salary_day)
+		# 来月の給料支給日
+		if salary_day > int(now.day):
+			date_salary_day_next = (now).replace(day=int(salary_day-1))
+		else:
+			date_salary_day_next = (now + relativedelta(months=1)).replace(day=int(salary_day-1))
+		temp_str_salary_day_next = date_salary_day_next.strftime('%Y%m%d')
+		str_salary_day_next = self.returnBizDay(temp_str_salary_day_next)
+
+		return str_salary_day, str_salary_day_next
+
+	def returnBizDay(self, DATE):
+		Date = datetime.date(int(DATE[0:4]), int(DATE[4:6]), int(DATE[6:8]))
+		while Date.weekday() >= 5 or jpholiday.is_holiday(Date):
+			Date = datetime.date(Date.year, Date.month, Date.day - 1)
+		return Date.strftime("%Y-%m-%d")
+    
 class Screen_Config_Money(BoxLayout):
 	spn_inout = ObjectProperty(None)
 	txt_money_kind = ObjectProperty(None)
@@ -209,6 +282,29 @@ class Screen_Config_Money(BoxLayout):
 			conn.commit()
 		else:
 			temp = 1
+		# 登録後は空白にする
+		self.ids.spn_inout2.text = 'inout'
+		self.ids.txt_money_kind.text = ''
+
+	def Entry_salary_date(self):
+		salary_day = self.ids.txt_SalaryDay_money
+		if salary_day != '':
+			str_sql = f"SELECT kind_value FROM config_list WHERE kind = 'Salary_day'"
+			cur = conn.cursor()
+			cur.execute(str_sql)
+			ret = cur.fetchall()
+			# データがなければ新しく追加
+			if len(ret) == 0:
+				str_sql = "INSERT INTO config_list (kind, kind_value, description) values('Salary_day', " + f"'{salary_day}', " + "'給料日')"
+			# データがあれば更新
+			else:
+				str_sql = "UPDATE config_list SET kind_value =" + salary_day + " where kind = 'Salary_day'"
+			cur.execute(str_sql)
+			conn.commit()
+		else:
+			temp = 1
+		# 登録後は空白にする
+		self.ids.txt_SalaryDay_money.text = ''
 
 class TableRow_Master(RecycleDataViewBehavior, BoxLayout):
     day = ObjectProperty(None)
@@ -267,6 +363,14 @@ if __name__=="__main__":
 			category TEXT NOT NULL,
 			price INTEGER NOT NULL,
 			freeword TEXT
+		)
+	''')
+	conn.execute('''
+		CREATE TABLE IF NOT EXISTS config_list ( 
+			id INTEGER PRIMARY KEY AUTOINCREMENT, 
+			kind TEXT NOT NULL,
+			kind_value TEXT NOT NULL,
+			description TEXT
 		)
 	''')
 

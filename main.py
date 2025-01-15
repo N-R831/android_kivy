@@ -124,6 +124,7 @@ class MoneyLayout(BoxLayout):
 	def on_release(self):
 		sr = self.ids.Screen_Record_Money
 		sr.on_enter()
+		sr.set_text()
 
 class Screen_Entry_Money(BoxLayout):
 	txt_day_money = ObjectProperty(None)
@@ -164,6 +165,11 @@ class Screen_Entry_Money(BoxLayout):
 			cur = conn.cursor()
 			cur.execute(str_sql)
 			conn.commit()
+			self.ids.spn_inout.text = '収支'
+			self.ids.spn_kind.text = 'kind'
+			self.ids.txt_money_money.text = ''
+			self.ids.txt_free_money.text = ''
+
 
 class Screen_Record_Money(BoxLayout):
 	rv_money = ObjectProperty(None)
@@ -176,16 +182,21 @@ class Screen_Record_Money(BoxLayout):
 		self.set_text()
     
 	def set_text(self):
-		income = self.get_income_data()
-		expense = self.get_expense_data()
-		if income == 'None':
-			income = 0
-		if expense == 'None':
-			expense = 0
-		sum = self.get_sum_data(int(income), int(expense))
-		self.lbl_income = "収入： " + str(income)
-		self.lbl_expense = "支出： " + str(expense)
-		self.lbl_sum = "合計： " + str(sum)
+		if self.get_salary_day() != 'None':
+			income = self.get_income_data()
+			expense = self.get_expense_data()
+			if income == 'None':
+				income = 0
+			if expense == 'None':
+				expense = 0
+			sum = self.get_sum_data(int(income), int(expense))
+			self.lbl_income = "収入： " + str(income)
+			self.lbl_expense = "支出： " + str(expense)
+			self.lbl_sum = "合計： " + str(sum)
+		else:
+			self.lbl_income = "収入： -"
+			self.lbl_expense = "支出： -"
+			self.lbl_sum = "合計： -"
 
 	def on_enter(self, *args):
 		print("GetData")
@@ -207,7 +218,7 @@ class Screen_Record_Money(BoxLayout):
 	def get_income_data(self):
 		salary_day , next_salary_day = self.get_salary_day()
 		str_sql = "SELECT SUM(price) FROM balance_hist WHERE inout = '収入' AND " \
-				  "(CAST(date AS DATE) BETWEEN CAST('" + salary_day + "' AS DATE) AND CAST('" + next_salary_day + "' AS DATE))"
+				  "(DATE(date) BETWEEN DATE('" + salary_day + "') AND DATE('" + next_salary_day + "'))"
 		cur = conn.cursor()
 		cur.execute(str_sql)
 		ret = cur.fetchall()
@@ -217,7 +228,7 @@ class Screen_Record_Money(BoxLayout):
 	def get_expense_data(self):
 		salary_day , next_salary_day = self.get_salary_day()
 		str_sql = "SELECT SUM(price) FROM balance_hist WHERE inout = '支出' AND " \
-				  "(CAST(date AS DATE) BETWEEN CAST('" + salary_day + "' AS DATE) AND CAST('" + next_salary_day + "' AS DATE))"
+				  "(DATE(date) BETWEEN DATE('" + salary_day + "') AND DATE('" + next_salary_day + "'))"
 		cur = conn.cursor()
 		cur.execute(str_sql)
 		ret = cur.fetchall()
@@ -232,23 +243,29 @@ class Screen_Record_Money(BoxLayout):
 		cur = conn.cursor()
 		cur.execute(str_sql)
 		ret = cur.fetchall()
-		salary_day = int(ret[0][0])
-		now = datetime.datetime.now()
-		if salary_day > int(now.day):
-			date_salary_day = datetime.datetime(now.year, int(now.month) - 1, int(salary_day-1))
-		else:
-			date_salary_day = datetime.datetime(now.year, now.month, int(salary_day-1))
-		temp_str_salary_day = date_salary_day.strftime('%Y%m%d')
-		str_salary_day = self.returnBizDay(temp_str_salary_day)
-		# 来月の給料支給日
-		if salary_day > int(now.day):
-			date_salary_day_next = (now).replace(day=int(salary_day-1))
-		else:
-			date_salary_day_next = (now + relativedelta(months=1)).replace(day=int(salary_day-1))
-		temp_str_salary_day_next = date_salary_day_next.strftime('%Y%m%d')
-		str_salary_day_next = self.returnBizDay(temp_str_salary_day_next)
+		if len(ret) != 0:
+			salary_day = int(ret[0][0])
+			now = datetime.datetime.now()
+			if salary_day > int(now.day):
+				if int(now.month) == 1:
+					date_salary_day = datetime.datetime(now.year-1, 12, int(salary_day-1))
+				else:
+					date_salary_day = datetime.datetime(now.year, int(now.month) - 1, int(salary_day-1))
+			else:
+				date_salary_day = datetime.datetime(now.year, now.month, int(salary_day-1))
+			temp_str_salary_day = date_salary_day.strftime('%Y%m%d')
+			str_salary_day = self.returnBizDay(temp_str_salary_day)
+			# 来月の給料支給日
+			if salary_day > int(now.day):
+				date_salary_day_next = (now).replace(day=int(salary_day-1))
+			else:
+				date_salary_day_next = (now + relativedelta(months=1)).replace(day=int(salary_day-1))
+			temp_str_salary_day_next = date_salary_day_next.strftime('%Y%m%d')
+			str_salary_day_next = self.returnBizDay(temp_str_salary_day_next)
 
-		return str_salary_day, str_salary_day_next
+			return str_salary_day, str_salary_day_next
+		else:
+			return 'None'
 
 	def returnBizDay(self, DATE):
 		Date = datetime.date(int(DATE[0:4]), int(DATE[4:6]), int(DATE[6:8]))
@@ -287,7 +304,7 @@ class Screen_Config_Money(BoxLayout):
 		self.ids.txt_money_kind.text = ''
 
 	def Entry_salary_date(self):
-		salary_day = self.ids.txt_SalaryDay_money
+		salary_day = self.ids.txt_SalaryDay_money.text
 		if salary_day != '':
 			str_sql = f"SELECT kind_value FROM config_list WHERE kind = 'Salary_day'"
 			cur = conn.cursor()
@@ -373,5 +390,5 @@ if __name__=="__main__":
 			description TEXT
 		)
 	''')
-
+	
 	MainApp().run()

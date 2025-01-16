@@ -15,19 +15,18 @@ from kivymd.uix.boxlayout import MDBoxLayout
 KV = '''
 MDScreen:
     md_bg_color: self.theme_cls.backgroundColor
-    orientation: "vertical"
     MDNavigationLayout:
 
         MDScreenManager:
-            id:MDScreenManager
+            id: MDSM
             MDScreen:
+                orientation: 'vertical'
                 name:"kake_Entry_screen"
-
                 MDLabel:
                     text: "MDLabel"
-                    halign: "left"
+                    halign: "center"
                 MDButton:
-                    pos_hint: {"center_x": .5, "center_y": .5}
+                    y: "36dp"
                     on_release: nav_drawer.set_state("toggle")
                     MDButtonText:
                         text: "AAA"
@@ -54,17 +53,16 @@ MDScreen:
 
                 MDNavigationDrawerItem:
                     on_release:
-                        root.current = "kake_Entry_screen"
+                        MDSM.current = "kake_Entry_screen"
                         nav_drawer.set_state("toggle")
-                        print(root.current)
                     MDNavigationDrawerItemText:
                         text: "Entry"
                         
                 MDNavigationDrawerItem:
                     on_release:
-                        root.current = "kake_Record_screen"
+                        MDSM.current = "kake_Record_screen"
                         nav_drawer.set_state("toggle")
-                        print(root.current)
+                        print(root.ids)
                     MDNavigationDrawerItemText:
                         text: "Record"
                         
